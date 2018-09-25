@@ -77,7 +77,7 @@ void ackPadiFrame(int32_t fd, uint8_t *buffer, uint8_t *mac)
 	ptrPadoFrame[19] = 0x08;
 
 	//tag type
-	if (TAG_TYPE_HOST_UNIQ == tagType)
+	if (TAG_TYPE_SERVICE_NAME == tagType)
 	{
 		ptrPadoFrame[20] = buffer[20];
 		ptrPadoFrame[21] = buffer[21];
