@@ -76,13 +76,13 @@ void ackPadiFrame(int32_t fd, uint8_t *buffer, uint8_t *mac)
 	ptrPadoFrame[18] = 0x00;
 	ptrPadoFrame[19] = 0x08;
 
+	uint16_t tagLen = u8ToU16(buffer[22], buffer[23]);
 	//tag type
 	if (TAG_TYPE_SERVICE_NAME == tagType)
 	{
 		ptrPadoFrame[20] = buffer[20];
 		ptrPadoFrame[21] = buffer[21];
 
-		uint16_t tagLen = u8ToU16(buffer[22], buffer[23]);
 		//Sevice Name
 		memcpy(&ptrPadoFrame[22], &buffer[22], tagLen);
 	}
@@ -140,10 +140,11 @@ void ackPadrFrame(int32_t fd, uint8_t *buffer, uint8_t *mac)
 	ptrPadsFrame[20] = 0x01;
 	ptrPadsFrame[21] = 0x03;
 
-	//Sevice Name
-	memcpy(&ptrPadsFrame[22], g_serverName, 4);
+	uint16_t tagLen = u8ToU16(buffer[22], buffer[23]);
+	//host uniq
+	memcpy(&ptrPadsFrame[22], &buffer[24], tagLen);
 
-	if (send(fd, ptrPadsFrame, 26, 0) < 0)
+	if (send(fd, ptrPadsFrame, 24 + tagLen, 0) < 0)
 	{
 		printf("send pads error \n");
 	}
@@ -167,7 +168,7 @@ int32_t main(int32_t argc, char **argv)
 	struct ifreq ifreq;
 	uint8_t hostMac[MAC_ADDR_LEN]={0};
 
-	strncpy(ifreq.ifr_name, "ens33", strlen("ens33"));
+	strncpy(ifreq.ifr_name, "eth1", strlen("eth1"));
 
 	if (ioctl(fd, SIOCGIFHWADDR, &ifreq) < 0)
 	{
@@ -211,7 +212,7 @@ int32_t main(int32_t argc, char **argv)
 				{
 					uint8_t code = buffer[15];
 
-					if (FRAME_TYPE_PADI == code)
+					if (FRAME_TYPE_PADI_CODE == code)
 					{
 						ackPadiFrame(fd, buffer, hostMac);
 					}	
