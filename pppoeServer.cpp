@@ -159,7 +159,7 @@ int32_t main(int32_t argc, char **argv)
 	int32_t fd = 0;
 	fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 
-	if (fd == -1)
+	if (fd < 0)
 	{
 		printf("socket create error \n");
 		return -1;
@@ -168,6 +168,7 @@ int32_t main(int32_t argc, char **argv)
 	struct ifreq ifreq;
 	uint8_t hostMac[MAC_ADDR_LEN]={0};
 
+	memset(&ifreq, 0, sizeof(ifreq));
 	strncpy(ifreq.ifr_name, "eth1", strlen("eth1"));
 
 	if (ioctl(fd, SIOCGIFHWADDR, &ifreq) < 0)

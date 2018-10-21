@@ -90,7 +90,7 @@ void sendPadiFrame(int32_t fd, uint8_t *hostMac)
 
 	if (send(fd, sendPtr, 26, 0) < 0)
 	{
-		printf("send pads error \n");
+		printf("send padi error \n");
 	}
 
 	delete []sendPtr;
@@ -131,7 +131,7 @@ void sendPadrFrame(int32_t fd, uint8_t *hostMac, uint8_t *svrMac)
 
 	if (send(fd, sendPtr, 26, 0) < 0)
 	{
-		printf("send padr error \n");
+		perror("send padr error");
 	}
 
 	delete []sendPtr;
@@ -146,7 +146,7 @@ int32_t main(int32_t argc, char **argv)
 
 	if (fd == -1)
 	{
-		printf("socket create error \n");
+		perror("socket create error");
 		return -1;
 	}
 
@@ -155,6 +155,7 @@ int32_t main(int32_t argc, char **argv)
 	uint8_t serverMac[MAC_ADDR_LEN] = {0};
 	uint16_t sessionId = 0;
 
+	memset(&ifreq, 0, sizeof(ifreq));
 	strncpy(ifreq.ifr_name, "eth0", strlen("eth0"));
 
 	if (ioctl(fd, SIOCGIFHWADDR, &ifreq) < 0)
